@@ -20,7 +20,7 @@ Um sistema simples de controle de estoque desenvolvido em Python com duas versõ
 ```bash
 python app.py
 
-🔧 Desenvolvimento
+### Desenvolvimento
 Primeira Versão (Terminal)
 A primeira versão foi desenvolvida como um sistema de terminal com:
 
@@ -41,7 +41,7 @@ Janela de visualização com scroll
 
 Mesma lógica de negócio com experiência visual melhorada
 
-💾 Armazenamento de Dados
+### 💾 Armazenamento de Dados
 Os dados são armazenados automaticamente no arquivo estoque.json que é criado na primeira execução. O arquivo mantém:
 
 Código do produto (chave única)
@@ -52,7 +52,7 @@ Preço (float)
 
 Quantidade em estoque (integer)
 
-🎯 Exemplo de Uso
+### 🎯 Exemplo de Uso
 Execute o programa
 
 Escolha a opção desejada no menu
@@ -61,7 +61,7 @@ Siga as instruções nos popups
 
 Os dados são salvos automaticamente
 
-📝 Próximas Melhorias
+### 📝 Próximas Melhorias
 Sistema de categorias
 
 Relatórios de estoque baixo
