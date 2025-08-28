@@ -16,10 +16,6 @@ Um sistema simples de controle de estoque desenvolvido em Python com duas versõ
 ### Pré-requisitos
 - Python 3.6 ou superior
 
-### Versão Terminal
-```bash
-python app.py
-
 ### Desenvolvimento
 Primeira Versão (Terminal)
 A primeira versão foi desenvolvida como um sistema de terminal com:
