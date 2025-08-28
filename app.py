@@ -1,175 +1,163 @@
 import json
 import os
+import tkinter as tk
+from tkinter import messagebox, simpledialog, scrolledtext
 
-# Nome do arquivo para armazenar os dados
 ARQUIVO_ESTOQUE = 'estoque.json'
 
-# Função para carregar os dados do estoque
-def carregar_estoque():
-    if os.path.exists(ARQUIVO_ESTOQUE):
-        try:
-            with open(ARQUIVO_ESTOQUE, 'r') as f:
-                return json.load(f)
-        except (json.JSONDecodeError, FileNotFoundError):
-            return {}
-    return {}
-
-# Função para salvar os dados do estoque
-def salvar_estoque(estoque):
-    with open(ARQUIVO_ESTOQUE, 'w') as f:
-        json.dump(estoque, f, indent=4)
-
-# Função para adicionar um novo produto
-def adicionar_produto(estoque):
-    print("\n--- Adicionar Novo Produto ---")
+class SistemaEstoque:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Sistema de Controle de Estoque")
+        self.root.geometry("500x400")
+        
+        self.carregar_estoque()
+        self.criar_interface()
     
-    try:
-        codigo = input("Código do produto: ").strip()
-        if not codigo:
-            print("Erro: Código do produto não pode estar vazio.")
-            return
-        
-        if codigo in estoque:
-            print("Erro: Já existe um produto com este código.")
-            return
-        
-        nome = input("Nome do produto: ").strip()
-        if not nome:
-            print("Erro: Nome do produto não pode estar vazio.")
-            return
-        
-        preco = float(input("Preço do produto: R$ "))
-        if preco <= 0:
-            print("Erro: Preço deve ser maior que zero.")
-            return
-        
-        quantidade = int(input("Quantidade em estoque: "))
-        if quantidade < 0:
-            print("Erro: Quantidade não pode ser negativa.")
-            return
-        
-        estoque[codigo] = {
-            'nome': nome,
-            'preco': preco,
-            'quantidade': quantidade
-        }
-        
-        salvar_estoque(estoque)
-        print(f"Produto '{nome}' adicionado com sucesso!")
-        
-    except ValueError:
-        print("Erro: Valor inválido. Certifique-se de digitar números para preço e quantidade.")
-
-# Função para visualizar todos os produtos
-def visualizar_estoque(estoque):
-    print("\n--- Estoque Atual ---")
-    
-    if not estoque:
-        print("Nenhum produto em estoque.")
-        return
-    
-    print(f"{'Código':<10} {'Nome':<20} {'Preço (R$)':<12} {'Quantidade':<10}")
-    print("-" * 55)
-    
-    for codigo, produto in estoque.items():
-        print(f"{codigo:<10} {produto['nome']:<20} {produto['preco']:<12.2f} {produto['quantidade']:<10}")
-
-# Função para atualizar um produto
-def atualizar_produto(estoque):
-    print("\n--- Atualizar Produto ---")
-    
-    codigo = input("Digite o código do produto que deseja atualizar: ").strip()
-    
-    if codigo not in estoque:
-        print("Erro: Produto não encontrado.")
-        return
-    
-    produto = estoque[codigo]
-    print(f"Produto encontrado: {produto['nome']}")
-    
-    try:
-        print("\nDeixe em branco para manter o valor atual.")
-        
-        novo_nome = input(f"Novo nome [{produto['nome']}]: ").strip()
-        if novo_nome:
-            produto['nome'] = novo_nome
-        
-        novo_preco = input(f"Novo preço [R$ {produto['preco']}]: ").strip()
-        if novo_preco:
-            produto['preco'] = float(novo_preco)
-            if produto['preco'] <= 0:
-                print("Erro: Preço deve ser maior que zero.")
-                return
-        
-        nova_quantidade = input(f"Nova quantidade [{produto['quantidade']}]: ").strip()
-        if nova_quantidade:
-            produto['quantidade'] = int(nova_quantidade)
-            if produto['quantidade'] < 0:
-                print("Erro: Quantidade não pode ser negativa.")
-                return
-        
-        salvar_estoque(estoque)
-        print("Produto atualizado com sucesso!")
-        
-    except ValueError:
-        print("Erro: Valor inválido. Certifique-se de digitar números para preço e quantidade.")
-
-# Função para excluir um produto
-def excluir_produto(estoque):
-    print("\n--- Excluir Produto ---")
-    
-    codigo = input("Digite o código do produto que deseja excluir: ").strip()
-    
-    if codigo not in estoque:
-        print("Erro: Produto não encontrado.")
-        return
-    
-    produto = estoque[codigo]
-    confirmacao = input(f"Tem certeza que deseja excluir o produto '{produto['nome']}'? (s/n): ").strip().lower()
-    
-    if confirmacao == 's':
-        del estoque[codigo]
-        salvar_estoque(estoque)
-        print("Produto excluído com sucesso!")
-    else:
-        print("Operação cancelada.")
-
-# Função para exibir o menu
-def exibir_menu():
-    print("\n" + "="*40)
-    print("      SISTEMA DE CONTROLE DE ESTOQUE")
-    print("="*40)
-    print("1. Adicionar produto")
-    print("2. Visualizar estoque")
-    print("3. Atualizar produto")
-    print("4. Excluir produto")
-    print("5. Sair")
-    print("="*40)
-
-# Função principal
-def main():
-    estoque = carregar_estoque()
-    
-    while True:
-        exibir_menu()
-        
-        opcao = input("Digite a opção desejada: ").strip()
-        
-        if opcao == '1':
-            adicionar_produto(estoque)
-        elif opcao == '2':
-            visualizar_estoque(estoque)
-        elif opcao == '3':
-            atualizar_produto(estoque)
-        elif opcao == '4':
-            excluir_produto(estoque)
-        elif opcao == '5':
-            print("Saindo do sistema. Até logo!")
-            break
+    def carregar_estoque(self):
+        if os.path.exists(ARQUIVO_ESTOQUE):
+            try:
+                with open(ARQUIVO_ESTOQUE, 'r') as f:
+                    self.estoque = json.load(f)
+            except:
+                self.estoque = {}
         else:
-            print("Opção inválida. Por favor, escolha uma opção entre 1 e 5.")
+            self.estoque = {}
+    
+    def salvar_estoque(self):
+        with open(ARQUIVO_ESTOQUE, 'w') as f:
+            json.dump(self.estoque, f, indent=4)
+    
+    def criar_interface(self):
+        # Frame principal
+        frame = tk.Frame(self.root)
+        frame.pack(pady=20)
         
-        input("\nPressione Enter para continuar...")
+        # Botões
+        botoes = [
+            ("Adicionar Produto", self.adicionar_produto),
+            ("Visualizar Estoque", self.visualizar_estoque),
+            ("Atualizar Produto", self.atualizar_produto),
+            ("Excluir Produto", self.excluir_produto),
+            ("Sair", self.sair)
+        ]
+        
+        for texto, comando in botoes:
+            btn = tk.Button(frame, text=texto, command=comando, width=20, height=2)
+            btn.pack(pady=5)
+    
+    def adicionar_produto(self):
+        codigo = simpledialog.askstring("Adicionar Produto", "Código do produto:")
+        if not codigo:
+            return
+            
+        if codigo in self.estoque:
+            messagebox.showerror("Erro", "Já existe um produto com este código.")
+            return
+            
+        nome = simpledialog.askstring("Adicionar Produto", "Nome do produto:")
+        if not nome:
+            return
+            
+        try:
+            preco = float(simpledialog.askstring("Adicionar Produto", "Preço do produto (R$):"))
+            quantidade = int(simpledialog.askstring("Adicionar Produto", "Quantidade em estoque:"))
+            
+            if preco <= 0 or quantidade < 0:
+                messagebox.showerror("Erro", "Valores inválidos.")
+                return
+                
+            self.estoque[codigo] = {
+                'nome': nome,
+                'preco': preco,
+                'quantidade': quantidade
+            }
+            
+            self.salvar_estoque()
+            messagebox.showinfo("Sucesso", f"Produto '{nome}' adicionado com sucesso!")
+            
+        except ValueError:
+            messagebox.showerror("Erro", "Valores inválidos para preço ou quantidade.")
+    
+    def visualizar_estoque(self):
+        if not self.estoque:
+            messagebox.showinfo("Estoque", "Nenhum produto em estoque.")
+            return
+            
+        # Criar janela para visualização
+        janela = tk.Toplevel(self.root)
+        janela.title("Estoque Atual")
+        janela.geometry("600x400")
+        
+        texto = scrolledtext.ScrolledText(janela, width=70, height=20)
+        texto.pack(pady=10, padx=10)
+        
+        # Cabeçalho
+        cabecalho = f"{'Código':<10} {'Nome':<20} {'Preço (R$)':<12} {'Quantidade':<10}\n"
+        texto.insert(tk.END, cabecalho)
+        texto.insert(tk.END, "-" * 55 + "\n")
+        
+        # Produtos
+        for codigo, produto in self.estoque.items():
+            linha = f"{codigo:<10} {produto['nome']:<20} {produto['preco']:<12.2f} {produto['quantidade']:<10}\n"
+            texto.insert(tk.END, linha)
+        
+        texto.config(state=tk.DISABLED)
+    
+    def atualizar_produto(self):
+        codigo = simpledialog.askstring("Atualizar Produto", "Código do produto para atualizar:")
+        if not codigo or codigo not in self.estoque:
+            messagebox.showerror("Erro", "Produto não encontrado.")
+            return
+            
+        produto = self.estoque[codigo]
+        
+        nome = simpledialog.askstring("Atualizar Produto", f"Novo nome [{produto['nome']}]:")
+        if nome is None:  # Usuário cancelou
+            return
+        if nome:  # Se não estiver vazio
+            produto['nome'] = nome
+            
+        try:
+            preco = simpledialog.askstring("Atualizar Produto", f"Novo preço [R$ {produto['preco']}]:")
+            if preco is not None and preco:  # Se não for None e não estiver vazio
+                produto['preco'] = float(preco)
+                
+            quantidade = simpledialog.askstring("Atualizar Produto", f"Nova quantidade [{produto['quantidade']}]:")
+            if quantidade is not None and quantidade:  # Se não for None e não estiver vazio
+                produto['quantidade'] = int(quantidade)
+                
+            if produto['preco'] <= 0 or produto['quantidade'] < 0:
+                messagebox.showerror("Erro", "Valores inválidos.")
+                return
+                
+            self.salvar_estoque()
+            messagebox.showinfo("Sucesso", "Produto atualizado com sucesso!")
+            
+        except ValueError:
+            messagebox.showerror("Erro", "Valores inválidos para preço ou quantidade.")
+    
+    def excluir_produto(self):
+        codigo = simpledialog.askstring("Excluir Produto", "Código do produto para excluir:")
+        if not codigo or codigo not in self.estoque:
+            messagebox.showerror("Erro", "Produto não encontrado.")
+            return
+            
+        produto = self.estoque[codigo]
+        resposta = messagebox.askyesno("Confirmar", f"Tem certeza que deseja excluir o produto '{produto['nome']}'?")
+        
+        if resposta:
+            del self.estoque[codigo]
+            self.salvar_estoque()
+            messagebox.showinfo("Sucesso", "Produto excluído com sucesso!")
+    
+    def sair(self):
+        self.root.quit()
+    
+    def executar(self):
+        self.root.mainloop()
 
+# Executar o sistema
 if __name__ == "__main__":
-    main()
+    app = SistemaEstoque()
+    app.executar()
